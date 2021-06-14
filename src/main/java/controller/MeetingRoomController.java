@@ -1,11 +1,16 @@
 package controller;
 
+import entity.MeetingRoom;
+import repository.RoomRepository;
+import service.MeetingRoomServices;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class MeetingRoomController {
     private Scanner sc = new Scanner(System.in);
+    private MeetingRoomServices mrServices = new MeetingRoomServices(new RoomRepository());
 
     public static void main(String[] args) {
         MeetingRoomController mrc = new MeetingRoomController();
@@ -77,7 +82,11 @@ public class MeetingRoomController {
         System.out.println();
         double length = getSizeOfMeetingRoom("hosszát");
         System.out.println();
-        
+
+        int id = mrServices.saveMeetingRoom(new MeetingRoom(name, width, length));
+        if(id > -1){
+            System.out.println("Sikeresen elmentve! id: "+ id);
+        }
     }
 
     private double getSizeOfMeetingRoom(String txt){
