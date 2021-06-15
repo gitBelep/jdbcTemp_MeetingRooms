@@ -3,6 +3,8 @@ package service;
 import entity.MeetingRoom;
 import repository.RoomRepository;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 public class MeetingRoomServices {
@@ -13,27 +15,28 @@ public class MeetingRoomServices {
     }
 
 
-
     public int saveMeetingRoom(MeetingRoom room){
-
-
-        return rr.saveMeetingRoom(room);
+        return rr.saveMeetingRoomAndGetId(room);
     }
 
     public List<String> roomsOrderedByName(String ordering){
-        return rr.roomsOrderedByName(ordering);
+        return rr.roomsOrderedByNameB(ordering);
     }
 
     public List<String> everySecondMeetingRoom(){
-        return rr.everySecondMeetingRoom();
+        try{
+            return rr.everySecondMeetingRoom();
+        } catch (SQLException se){
+            return Collections.singletonList(se.getMessage());
+        }
     }
 
     public List<Double> listAreas(){
         return rr.listAreas();
     }
 
-    public List<MeetingRoom> findRoomByName(String s){
-        return rr.findRoomsByNameOrPart(s);
+    public List<MeetingRoom> findRoomByName(String name, String ifPart){
+        return rr.findRoomsByNameOrPart(name, ifPart);
     }
 
     public List<MeetingRoom> findRoomsByArea(double area){

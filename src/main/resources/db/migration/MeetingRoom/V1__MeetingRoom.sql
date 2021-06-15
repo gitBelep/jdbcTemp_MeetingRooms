@@ -1,0 +1,7 @@
+CREATE TABLE `rooms`(
+ `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+ `r_name` VARCHAR(255) NOT NULL UNIQUE COLLATE 'utf8_hungarian_ci',
+ `r_length` DOUBLE NOT NULL,
+ `r_width` DOUBLE NOT NULL,
+PRIMARY KEY (`id`) USING BTREE)
+COLLATE='utf8_hungarian_ci' ENGINE=InnoDB;

@@ -57,22 +57,31 @@ public class MeetingRoomController {
         System.out.println("8. Kilépés");
     }
 
-    private void saveMeetingRoom(){
-        System.out.println("Kérem, adja meg a tárgyaló nevét, melyet el kíván menteni:");
-        String name = sc.nextLine();
+    public int saveMeetingRoom(){
+        String name = getInputString("Kérem, adja meg a tárgyaló nevét, melyet el kíván menteni:");
         System.out.println();
-        double width = getSizeOfMeetingRoom("szélességét (X.X) ");
+        double width = inputSizeForCreateMeetingRoom("szélességét (X.X) ");
         System.out.println();
-        double length = getSizeOfMeetingRoom("hosszát (X.X) ");
+        double length = inputSizeForCreateMeetingRoom("hosszát (X.X) ");
         System.out.println();
 
         int id = mrServices.saveMeetingRoom(new MeetingRoom(name, width, length));
         if(id > -1){
             System.out.println("Sikeresen elmentve! id: "+ id);
         }
+        return id;
     }
 
-    private double getSizeOfMeetingRoom(String txt){
+    private String getInputString(String txt){
+        String in ="";
+        do {
+            System.out.println(txt);
+            in = sc.nextLine().trim();
+        } while (in.length() < 1);
+        return in;
+    }
+
+    private double inputSizeForCreateMeetingRoom(String txt){
         int size = 0;
         while (size <= 0) {
             System.out.println("Kérem, adja meg a tárgyaló " + txt + "méterben:");
@@ -85,11 +94,23 @@ public class MeetingRoomController {
         return size;
     }
 
-    private void writeMeetingRoomsOrderedByName(String ordering){
+    public void writeMeetingRoomsOrderedByName(String ordering){
         List<String> rooms = mrServices.roomsOrderedByName(ordering);
         int in = "desc".equals(ordering) ? rooms.size() : 1;
         Function<Integer, Integer> function = "desc".equals(ordering) ? (i -> i - 1) : (i -> i + 1);
         printList( rooms, in, function);
+    }
+
+    public void writeEverySecondMeetingRoom(){  //can I give an UnaryOp? (T==R)
+        List<String> rooms = mrServices.everySecondMeetingRoom();
+        UnaryOperator<Integer> function = i -> i + 1;
+        printList(rooms, 1, function);
+    }
+
+    public void writeAreas(){
+        List<Double> areas = mrServices.listAreas();
+        UnaryOperator<Integer> function = i -> i + 1;
+        printList(areas, 1, function);
     }
 
     private <T> void printList(List<T> list, int in, Function<Integer,Integer> function) {
@@ -99,29 +120,19 @@ public class MeetingRoomController {
         }
     }
 
-    private void writeEverySecondMeetingRoom(){  //can I give an UnaryOp? (T==R)
-        List<String> rooms = mrServices.everySecondMeetingRoom();
-        UnaryOperator<Integer> function = i -> i + 1;
-        printList(rooms, 1, function);
+
+    public void findMeetingRoomByNameOrPart(String ifPart){
+        String name = getInputString("Keresett tárgyaló neve vagy részlet:");
+        printMeetingRooms( mrServices.findRoomByName(name, ifPart) );
     }
 
-    private void writeAreas(){
-        List<Double> areas = mrServices.listAreas();
-        UnaryOperator<Integer> function = i -> i + 1;
-        printList(areas, 1, function);
-    }
-
-    private void findMeetingRoomByNameOrPart(String s){
-        listMeetingRooms( mrServices.findRoomByName(s) );
-    }
-
-    private void findMeetingRoomsAreaGreaterThan(){
+    public void findMeetingRoomsAreaGreaterThan(){
         System.out.println();
-        double area = getSizeOfMeetingRoom("területét (X.X) négyzet");
-        listMeetingRooms( mrServices.findRoomsByArea(area) );
+        double area = inputSizeForCreateMeetingRoom("területét (X.X) négyzet");
+        printMeetingRooms( mrServices.findRoomsByArea(area) );
     }
 
-    private void listMeetingRooms(List<MeetingRoom> rooms){
+    private void printMeetingRooms(List<MeetingRoom> rooms){
         for(MeetingRoom m : rooms){
             String area = String.format("%3.2f", m.getLength() * m.getWidth());
             System.out.println( m.getId()+" ~ "+ m.getName() +": "+ area);
