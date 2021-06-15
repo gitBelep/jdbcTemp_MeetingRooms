@@ -3,10 +3,11 @@ package controller;
 import entity.MeetingRoom;
 import repository.RoomRepository;
 import service.MeetingRoomServices;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class MeetingRoomController {
     private Scanner sc = new Scanner(System.in);
@@ -33,33 +34,15 @@ public class MeetingRoomController {
     }
 
     private void doProperActionByNumber(String choice){
-        if("0".equals(choice)){
-            saveMeetingRoom();
-        }
-        if("1".equals(choice)){
-            writeMeetingRoomsOrderedByName();
-        }
-        if("2".equals(choice)){
-            writeMeetingRoomsOrderedDescByName();
-        }
-        if("3".equals(choice)){
-            writeEverySecondMeetingRoom();
-        }
-        if("4".equals(choice)){
-            writeAreas();
-        }
-        if("5".equals(choice)){
-            findMeetingRoomByName();
-        }
-        if("6".equals(choice)){
-            findMeetingRoomByPartOfName();
-        }
-        if("7".equals(choice)){
-            findMeetingRoomAreaGreaterThan();
-        }
-        if("8".equals(choice)){
-            System.out.println(" * Viszontlátásra! * ");
-        }
+        if("0".equals(choice)) saveMeetingRoom();
+        if("1".equals(choice)) writeMeetingRoomsOrderedByName("asc");
+        if("2".equals(choice)) writeMeetingRoomsOrderedByName("desc");
+        if("3".equals(choice)) writeEverySecondMeetingRoom();
+        if("4".equals(choice)) writeAreas();
+        if("5".equals(choice)) findMeetingRoomByNameOrPart("");
+        if("6".equals(choice)) findMeetingRoomByNameOrPart("%");
+        if("7".equals(choice)) findMeetingRoomsAreaGreaterThan();
+        if("8".equals(choice)) System.out.println(" * Viszontlátásra! * ");
     }
 
     private void menu(){
@@ -78,9 +61,9 @@ public class MeetingRoomController {
         System.out.println("Kérem, adja meg a tárgyaló nevét, melyet el kíván menteni:");
         String name = sc.nextLine();
         System.out.println();
-        double width = getSizeOfMeetingRoom("szélességét");
+        double width = getSizeOfMeetingRoom("szélességét (X.X) ");
         System.out.println();
-        double length = getSizeOfMeetingRoom("hosszát");
+        double length = getSizeOfMeetingRoom("hosszát (X.X) ");
         System.out.println();
 
         int id = mrServices.saveMeetingRoom(new MeetingRoom(name, width, length));
@@ -92,7 +75,7 @@ public class MeetingRoomController {
     private double getSizeOfMeetingRoom(String txt){
         int size = 0;
         while (size <= 0) {
-            System.out.println("Kérem, adja meg a tárgyaló " + txt + " méterben:");
+            System.out.println("Kérem, adja meg a tárgyaló " + txt + "méterben:");
             try {
                 size = Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException ne){
@@ -102,13 +85,47 @@ public class MeetingRoomController {
         return size;
     }
 
-    private void writeMeetingRoomsOrderedByName(){
-        System.out.println("write 1");
+    private void writeMeetingRoomsOrderedByName(String ordering){
+        List<String> rooms = mrServices.roomsOrderedByName(ordering);
+        int in = "desc".equals(ordering) ? rooms.size() : 1;
+        Function<Integer, Integer> function = "desc".equals(ordering) ? (i -> i - 1) : (i -> i + 1);
+        printList( rooms, in, function);
     }
-    private void writeMeetingRoomsOrderedDescByName(){}
-    private void writeEverySecondMeetingRoom(){}
-    private void writeAreas(){}
-    private void findMeetingRoomByName(){}
-    private void findMeetingRoomByPartOfName(){}
-    private void findMeetingRoomAreaGreaterThan(){}
+
+    private <T> void printList(List<T> list, int in, Function<Integer,Integer> function) {
+        for (T t : list) {
+            System.out.println(in + ". " + t);
+            in = function.apply(in);
+        }
+    }
+
+    private void writeEverySecondMeetingRoom(){  //can I give an UnaryOp? (T==R)
+        List<String> rooms = mrServices.everySecondMeetingRoom();
+        UnaryOperator<Integer> function = i -> i + 1;
+        printList(rooms, 1, function);
+    }
+
+    private void writeAreas(){
+        List<Double> areas = mrServices.listAreas();
+        UnaryOperator<Integer> function = i -> i + 1;
+        printList(areas, 1, function);
+    }
+
+    private void findMeetingRoomByNameOrPart(String s){
+        listMeetingRooms( mrServices.findRoomByName(s) );
+    }
+
+    private void findMeetingRoomsAreaGreaterThan(){
+        System.out.println();
+        double area = getSizeOfMeetingRoom("területét (X.X) négyzet");
+        listMeetingRooms( mrServices.findRoomsByArea(area) );
+    }
+
+    private void listMeetingRooms(List<MeetingRoom> rooms){
+        for(MeetingRoom m : rooms){
+            String area = String.format("%3.2f", m.getLength() * m.getWidth());
+            System.out.println( m.getId()+" ~ "+ m.getName() +": "+ area);
+        }
+    }
+
 }
