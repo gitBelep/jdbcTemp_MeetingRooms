@@ -6,10 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.RoomRepository;
 import service.MeetingRoomServices;
-
-import java.sql.Connection;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MeetingRoomControllerTest {
@@ -31,11 +28,6 @@ class MeetingRoomControllerTest {
         mrs.saveMeetingRoom(new MeetingRoom("Négy", 4.4, 4.2));
     }
 
-//    @Test
-//    void saveMeetingRoom() {
-//        assertEquals(4, id4);
-//        assertEquals(2, id2);
-//    }
 
     @Test
     void writeMeetingRoomsOrderedByName() {
@@ -65,9 +57,6 @@ class MeetingRoomControllerTest {
 
         assertEquals(1.32, areas.get(0), 0.01);
         assertEquals(48.84, areas.get(3), 0.01);
-//        for(Double d : areas){
-//            System.out.println(">> "+ d);
-//        }
     }
 
     @Test
@@ -86,6 +75,15 @@ class MeetingRoomControllerTest {
 
     @Test
     void findMeetingRoomsAreaGreaterThan() {
-//        List<MeetingRoom> rooms = mrs;
+        List<MeetingRoom> rooms10 = mrs.findRoomsByArea(10.0);
+        List<MeetingRoom> rooms15 = mrs.findRoomsByArea(15.0);
+        List<MeetingRoom> rooms20 = mrs.findRoomsByArea(20.0);
+
+        // 1.32, 10.56, 18.480000000000004, 48.84
+        assertEquals(3, rooms10.size());
+        assertEquals(2, rooms15.size());
+        assertEquals("Négy", rooms15.get(1).getName());
+        assertEquals(1, rooms20.size());
     }
+
 }

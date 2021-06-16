@@ -3,6 +3,8 @@ package controller;
 import entity.MeetingRoom;
 import repository.RoomRepository;
 import service.MeetingRoomServices;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -35,8 +37,8 @@ public class MeetingRoomController {
 
     private void doProperActionByNumber(String choice){
         if("0".equals(choice)) saveMeetingRoom();
-        if("1".equals(choice)) writeMeetingRoomsOrderedByName("asc");
-        if("2".equals(choice)) writeMeetingRoomsOrderedByName("desc");
+        if("1".equals(choice)) writeMeetingRoomsOrderedByName("ASC");
+        if("2".equals(choice)) writeMeetingRoomsOrderedByName("DESC");
         if("3".equals(choice)) writeEverySecondMeetingRoom();
         if("4".equals(choice)) writeAreas();
         if("5".equals(choice)) findMeetingRoomByNameOrPart("");
@@ -82,11 +84,11 @@ public class MeetingRoomController {
     }
 
     private double inputSizeForCreateMeetingRoom(String txt){
-        int size = 0;
-        while (size <= 0) {
+        double size = 0.0;
+        while (size <= 0.0) {
             System.out.println("Kérem, adja meg a tárgyaló " + txt + "méterben:");
             try {
-                size = Integer.parseInt(sc.nextLine().trim());
+                size = Double.parseDouble(sc.nextLine().trim());
             } catch (NumberFormatException ne){
                 System.out.println("Nem megfelelő érték");
             }
@@ -96,8 +98,8 @@ public class MeetingRoomController {
 
     public void writeMeetingRoomsOrderedByName(String ordering){
         List<String> rooms = mrServices.roomsOrderedByName(ordering);
-        int in = "desc".equals(ordering) ? rooms.size() : 1;
-        Function<Integer, Integer> function = "desc".equals(ordering) ? (i -> i - 1) : (i -> i + 1);
+        int in = "DESC".equals(ordering) ? rooms.size() : 1;
+        Function<Integer, Integer> function = "DESC".equals(ordering) ? (i -> i - 1) : (i -> i + 1);
         printList( rooms, in, function);
     }
 
@@ -123,7 +125,11 @@ public class MeetingRoomController {
 
     public void findMeetingRoomByNameOrPart(String ifPart){
         String name = getInputString("Keresett tárgyaló neve vagy részlet:");
-        printMeetingRooms( mrServices.findRoomByName(name, ifPart) );
+        List<MeetingRoom> rooms = mrServices.findRoomByName(name, ifPart);
+        if(rooms.size() == 0){
+            rooms = new ArrayList<>(List.of(new MeetingRoom("Nincs ilyen tárgyaló.", 0.0, 0.0)));
+        }
+        printMeetingRooms( rooms );
     }
 
     public void findMeetingRoomsAreaGreaterThan(){

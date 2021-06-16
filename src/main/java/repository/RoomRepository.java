@@ -115,10 +115,20 @@ public class RoomRepository {
                 }, searchForText);
     }
 
-    public List<MeetingRoom> findRoomsByArea(double area) {
-        // --
-        return Collections.singletonList(new MeetingRoom("a", 1.1, 1.1));
+    public List<MeetingRoom> findRoomsByArea(double minimumArea) {
+        return jdbcTemplate.query(
+                "SELECT id, r_name, r_width, r_length FROM rooms WHERE (r_width * r_length) > ?;",
+                new RowMapper<MeetingRoom>() {
+                    @Override
+                    public MeetingRoom mapRow(ResultSet rs, int i) throws SQLException {
+                        String name = rs.getString("r_name");
+                        Double w = rs.getDouble("r_width");
+                        Double l = rs.getDouble("r_length");
+                        MeetingRoom m = new MeetingRoom(name, w, l);
+                        m.setId( rs.getInt("id") );
+                        return m;
+                    }
+                }, minimumArea);
     }
-
 
 }
