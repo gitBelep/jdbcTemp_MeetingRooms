@@ -1,10 +1,14 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MeetingRoom {
     private int id;
     private String name;
     private double width;
     private double length;
+    private List<Meeting> meetings = new ArrayList<>();
 
     public MeetingRoom(String name, double width, double length) {
         this.name = name;
@@ -43,4 +47,18 @@ public class MeetingRoom {
     public void setLength(double length) {
         this.length = length;
     }
+
+    public List<Meeting> getMeetings() {
+        return meetings;
+    }
+
+    public void setMeetings(List<Meeting> meetings) {
+        this.meetings = meetings;
+    }
+
+    public int addMeeting(Meeting meeting){
+        meetings.add(meeting);
+        return meetings.size();
+    }
+
 }

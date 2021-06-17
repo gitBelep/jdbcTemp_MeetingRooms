@@ -1,11 +1,13 @@
 package controller;
 
+import entity.Meeting;
 import entity.MeetingRoom;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.RoomRepository;
 import service.MeetingRoomServices;
+import java.time.LocalDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,6 +86,31 @@ class MeetingRoomControllerTest {
         assertEquals(2, rooms15.size());
         assertEquals("Négy", rooms15.get(1).getName());
         assertEquals(1, rooms20.size());
+    }
+
+    @Test
+    void findMeetingRoomsAndMeeting() {
+        Meeting mA1 = new Meeting("Alma", LocalDateTime.of(2021,7,1,13,0,0), 30);
+        Meeting mA2 = new Meeting("Abu", LocalDateTime.of(2021,7,1,14,30,0), 60);
+        List<Meeting> lA = List.of(mA2, mA1);
+        MeetingRoom rA = new MeetingRoom("Ötűs", 5.1, 5.2);
+        rA.setMeetings( lA );
+        mrs.saveMeetingRoomsAndMeetings( rA );
+
+        Meeting mB1 = new Meeting("Banya", LocalDateTime.of(2021,7,1,13,0,0), 90);
+        Meeting mB2 = new Meeting("Bősze", LocalDateTime.of(2021,7,1,14,30,0), 120);
+        List<Meeting> lB = List.of(mB2, mB1);
+        MeetingRoom rB = new MeetingRoom("Hatós", 6.1, 6.2);
+        rB.setMeetings( lB );
+        mrs.saveMeetingRoomsAndMeetings( rB );
+
+        List<MeetingRoom> rooms = mrs.loadMeetingRoomsWithMeetings();
+
+        assertEquals(6, rooms.size());
+        assertEquals(30, rooms.get(4).getMeetings().get(0).getDurationMin());
+        assertEquals("Abu", rooms.get(4).getMeetings().get(1).getOwner());
+        assertEquals(90, rooms.get(5).getMeetings().get(0).getDurationMin());
+        assertEquals("Bősze", rooms.get(5).getMeetings().get(1).getOwner());
     }
 
 }

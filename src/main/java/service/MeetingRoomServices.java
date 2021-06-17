@@ -1,8 +1,8 @@
 package service;
 
+import entity.Meeting;
 import entity.MeetingRoom;
 import repository.RoomRepository;
-
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +41,18 @@ public class MeetingRoomServices {
 
     public List<MeetingRoom> findRoomsByArea(double area){
         return rr.findRoomsByArea(area);
+    }
+
+    public void saveMeetingRoomsAndMeetings(MeetingRoom room){
+        rr.saveMeetingRoomsAndMeetings(room);
+    }
+
+    public List<Meeting> listMeetingsToRoom(long roomId){
+        return rr.listMeetingsToRoom(roomId);
+    }
+
+    public List<MeetingRoom> loadMeetingRoomsWithMeetings(){
+        return rr.loadMeetingRoomsWithMeetings();
     }
 
 }
