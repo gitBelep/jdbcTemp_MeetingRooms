@@ -1,5 +1,7 @@
 package entity;
 
+import repository.RoomRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +58,10 @@ public class MeetingRoom {
         this.meetings = meetings;
     }
 
-    public int addMeeting(Meeting meeting){
+    public boolean addMeeting(Meeting meeting){
         meetings.add(meeting);
-        return meetings.size();
+        RoomRepository rr = new RoomRepository();
+        return rr.saveMeeting(meeting);
     }
 
 }

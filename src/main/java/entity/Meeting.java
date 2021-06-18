@@ -6,6 +6,7 @@ public class Meeting {
     private String owner;
     private LocalDateTime start;
     private int durationMin;
+    private int roomId;
 
     public Meeting(String owner, LocalDateTime start, int durationMin) {
         this.owner = owner;
@@ -13,6 +14,12 @@ public class Meeting {
         this.durationMin = durationMin;
     }
 
+    public Meeting(String owner, LocalDateTime start, int durationMin, int roomId) {
+        this.owner = owner;
+        this.start = start;
+        this.durationMin = durationMin;
+        this.roomId = roomId;
+    }
 
     public String getOwner() {
         return owner;
@@ -37,4 +44,13 @@ public class Meeting {
     public void setDurationMin(int durationMin) {
         this.durationMin = durationMin;
     }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
 }

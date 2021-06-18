@@ -113,4 +113,14 @@ class MeetingRoomControllerTest {
         assertEquals("Bősze", rooms.get(5).getMeetings().get(1).getOwner());
     }
 
+    @Test
+    void addMeetingToRoom() {
+        MeetingRoom m = mrs.findRoomByName("ttő", "%").get(0); //"Kettő"
+        LocalDateTime dt = LocalDateTime.of(2022,1,1,9,0);
+        m.addMeeting(new Meeting("Ű", dt, 10, m.getId()));
+        List<MeetingRoom> rooms = mrs.loadMeetingRoomsWithMeetings();
+
+        assertEquals("Ű", rooms.get(1).getMeetings().get(0).getOwner());
+    }
+
 }

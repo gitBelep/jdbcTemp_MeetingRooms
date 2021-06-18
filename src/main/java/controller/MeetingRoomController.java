@@ -1,9 +1,12 @@
 package controller;
 
+import entity.Meeting;
 import entity.MeetingRoom;
 import repository.RoomRepository;
 import service.MeetingRoomServices;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,13 +29,14 @@ public class MeetingRoomController {
             menu();
 
             choice = sc.nextLine().trim();
-            List<String> menuPoints = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8");
+            List<String> menuPoints = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
             if (menuPoints.contains(choice)) {
                 doProperActionByNumber(choice);
             } else {
                 System.out.println("Nincs ilyen menüpont");
             }
         } while(!choice.equals("8"));
+        sc.close();
     }
 
     private void doProperActionByNumber(String choice){
@@ -45,6 +49,7 @@ public class MeetingRoomController {
         if("6".equals(choice)) findMeetingRoomByNameOrPart("%");
         if("7".equals(choice)) findMeetingRoomsAreaGreaterThan();
         if("8".equals(choice)) System.out.println(" * Viszontlátásra! * ");
+        if("9".equals(choice)) saveMeetingToRoom();
     }
 
     private void menu(){
@@ -57,6 +62,7 @@ public class MeetingRoomController {
         System.out.println("6. Keresés névtöredék alapján");
         System.out.println("7. Keresés terület alapján");
         System.out.println("8. Kilépés");
+        System.out.println("9. Meeting mentése");
     }
 
     public int saveMeetingRoom(){
@@ -143,6 +149,34 @@ public class MeetingRoomController {
             String area = String.format("%3.2f", m.getLength() * m.getWidth());
             System.out.println( m.getId()+" ~ "+ m.getName() +": "+ area);
         }
+    }
+
+    public void saveMeetingToRoom(){
+        String owner = getInputString("Meeting rendezője:");
+        LocalDateTime start = getInputStartTime();
+        int duration = Integer.parseInt(getInputString("Meeting hossza (percben):"));
+        String roomName = getInputString("Tárgyaló neve");
+        MeetingRoom room = mrServices.findRoomByName(roomName, "").get(0);
+
+        //save to DB
+        if( room.addMeeting(new Meeting(owner, start, duration, room.getId())) ){
+            DateTimeFormatter f2 = DateTimeFormatter.ofPattern("MM.dd HH:mm");
+            System.out.println("Meeting "+ start.format(f2) +"-kor \""+ room.getName() +"\" tárgyalóba elmentve.");
+        }
+    }
+
+    private LocalDateTime getInputStartTime(){
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime start = null;
+        do {
+            try {
+                String startString = getInputString("Kezdő időpont \"éééé-hh-nn óó:pp\"");
+                start = LocalDateTime.parse(startString, f);
+            } catch (DateTimeParseException de) {
+                System.out.print ("Helytelen ");
+            }
+        } while (start == null);
+        return start;
     }
 
 }

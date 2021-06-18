@@ -231,4 +231,12 @@ public class RoomRepository {
         }
     }
 
+    public boolean saveMeeting(Meeting actual){
+        jdbcTemplate.update(
+                "INSERT INTO meetings(room_id, owner, start_time, duration) VALUES (?,?,?,?)",
+                actual.getRoomId(), actual.getOwner(),
+                Timestamp.valueOf(actual.getStart()), actual.getDurationMin());
+        return true;
+    }
+
 }
